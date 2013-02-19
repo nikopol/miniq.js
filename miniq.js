@@ -71,6 +71,7 @@ EVENTS =======================================================================
   .touchstart(function)
   .touchend(function)
   .touchmove(function)
+  .orientationchange(function)
 
 MISC =========================================================================
 
@@ -391,7 +392,7 @@ var $ = (function(){
 
 	};
 	//setup event fn
-	"focus blur focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select keydown keypress keyup error animationstart animationend animationiteration touchstart touchend touchmove"
+	"focus blur focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select keydown keypress keyup error animationstart animationend animationiteration touchstart touchend touchmove orientationchange"
 		.split(' ').forEach(function(e){
 			W.miniq.prototype[e]=function(cb){ return cb ? this.bind(e,cb) : this.fire(e) };
 		});
