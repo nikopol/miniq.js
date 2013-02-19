@@ -150,6 +150,13 @@
 		});
 	</script>
 
-	<h1>END</h1>
-</body>
+	<h1>MISC</h1>
+	<div id="z1">global plugin</div>
+	<div id="z2">list plugin</div>
+	<script>
+		$(function(){
+		/*z1*/$.zob=function(){ $('#z1').cls('+ok'); }; $.zob();
+		/*z2*/miniq.prototype.zob=function(){ return this.cls('+ok') }; $('#z2').zob();
+		});
+	</script></body>
 </html>
