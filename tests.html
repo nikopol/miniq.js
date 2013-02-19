@@ -62,8 +62,8 @@
 	<div id="d6">.html("html")</div>
 	<div id="d7">.val()</div>
 	<div id="d8">.val(value)</div>
-	<div id="d9">.check()</div>
-	<div id="da">.check(bool)</div>
+	<div id="d9">check.val()</div>
+	<div id="da">check.val(bool)</div>
 	<div id="db">select.val()</div>
 	<div id="dc">select.val(value)</div>
 	<script>
@@ -76,10 +76,10 @@
 		/*d6*/ $("<p id=sd6></p>").html("test6").html()=="test6" && $('#d6').cls('+ok');
 		/*d7*/ $("<input type=text id=sd7 value=test7>").val()=="test7" && $('#d7').cls('+ok');
 		/*d8*/ $("<input type=text id=sd8>").val("test8")[0].value=="test8" && $('#d8').cls('+ok');
-		/*d9*/ $("<input type=checkbox checked id=sd9>").check() && $('#d9').cls('+ok');
-		/*da*/ $("<input type=checkbox id=sda>").check(true).check() && $('#da').cls('+ok')
-		/*db*/ $("<select id=sdb><option value=a>1</option><option value=b>2</option></select>'").value()=="a" && $('#db').cls('+ok');
-		/*dc*/ $("<select id=sdc><option value=a>1</option><option value=b>2</option></select>'").value("b").value()=="b" && $('#dc').cls('+ok');
+		/*d9*/ $("<input type=checkbox checked id=sd9>").val() && $('#d9').cls('+ok');
+		/*da*/ $("<input type=checkbox id=sda>").val(true).val() && $('#da').cls('+ok')
+		/*db*/ $("<select id=sdb><option value=a>1</option><option value=b>2</option></select>").val()=="a" && $('#db').cls('+ok');
+		/*dc*/ $("<select id=sdc><option value=a>1</option><option value=b>2</option></select>").val("b").val()=="b" && $('#dc').cls('+ok');
 		});
 	</script>
 

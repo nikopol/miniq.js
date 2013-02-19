@@ -1,7 +1,7 @@
 // miniq.js 0.1 - niko 2013
 
 /*
-mini jquery-like library for modern browsers
+one more mini jquery-like library for modern browsers
 
 support firefox, opera, chrome, safari, and IE9+ with the following header
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
@@ -23,13 +23,11 @@ DOM ==========================================================================
   .html("html")     : set the inner html
   .val()            : return value of the first element
   .val(value)       : set value
-  .check()          : return checked input count in the collection
-  .check(bool)      : un/check collection
 
 CSS ==========================================================================
 
   .css({key:val})   : apply styles
-  .css("key","val") : apply styles
+  .css("key","val") : apply style
   .css("style")     : return style of the first element
   .cls()            : return classname of the first element
   .cls("+a-b*c")    : relatively set classname : +add a, -remove b, *switch c
@@ -105,6 +103,12 @@ as follows :
   	console.log("hello world",this.list)
   };
 
+otherwise extend $
+
+  $.helloworld=function(){ 
+  	console.log("hello world")
+  };
+
 */
 
 /* CORE */
@@ -116,7 +120,17 @@ var $ = (function(){
 	$,
 	P = 0,
 	W = window,
-	D = W.document;
+	D = W.document,
+	V = function(e,v){
+		if(e && 'value' in e){
+			var c = e.type[0]=='c', s = e.type[0]=='s';
+			if(v==undefined) return c ? e.checked : e.value;
+			if(c) e.checked = !!v;
+			else if(s) [].slice.call(e.options).forEach(function(o,n){ if(o.value==v) e.selectedIndex = n });
+			else e.value = v;
+		}
+		return null;
+	};
 
 	W.miniq = function(s){
 		var L = [],n,c,b;
@@ -260,7 +274,8 @@ var $ = (function(){
 		},
 
 		to: function(s){
-			return $(s).append(this.list);
+			$(s).append(this.list);
+			return this;
 		},
 
 		remove: function(){
@@ -277,20 +292,14 @@ var $ = (function(){
 
 		val: function(s){
 			return s==undefined
-				? ( this.length && 'value' in this[0] ? this[0].value : null )
-				: this.each(function(o){ if('value' in o) o.value = s });
+				? V(this[0])
+				: this.each(function(o){ V(o,s) });
 		},
 
 		attr: function(s){
 			if(typeof(s)=='string') return this.length ? this[0].getAttribute(s) : null;
 			for(var k in s) this.each(function(o){ o.setAttribute(k,s[k]) });
 			return this;
-		},
-
-		check: function(s){
-			return s==undefined
-				? this.list.filter(function(o){ return o.checked }).length
-				: this.each(function(o){ 'checked' in o && (o.checked=s) });
 		},
 
 		cls: function(c){
