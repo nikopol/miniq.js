@@ -1,0 +1,155 @@
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+	<script src="miniq.js"></script>
+	<style>
+		body {
+			font: normal 12px mono;
+		}
+		h1 {
+			font: bold 18px mono;
+			margin: 3px;
+			clear: both;
+		}
+		div {
+			float: left;
+			text-align: center;
+			width: 200px;
+			color: #fff;
+			background-color: #a44;
+			padding: 2px;
+			margin: 1px;
+		}
+		div.ok {
+			background-color: #4a4;
+		}
+		div.todo {
+			background-color: #888;
+		}
+		#sandbox {
+			position: absolute;
+			padding: 0;
+			margin: 0;
+			top: -10000px;
+		}
+	</style>
+</head>
+<body>
+	<div id="sandbox"></div>
+
+	<h1>SELECTORS</h1>
+	<div id="s1">$(function)</div>
+	<div id="s2">$("html")</div>
+	<div id="s3">$("#id")</div>
+	<div class="s4">$(".class")</div>
+	<div id="s5">$("elem")</div>
+	<script>
+		$(function(){
+		/*s1*/ $(function(){ $('#s1').cls('+ok') });
+		/*s2*/ $('<p><p>').length==2 && $('#s2').cls('+ok');
+		/*s3*/ $('#s3').cls('+ok');
+		/*s4*/ $('.s4').cls('+ok');
+		/*s5*/ $('body')[0].tagName=="BODY" && $('#s5').cls('+ok');
+		});
+	</script>
+
+	<h1>DOM</h1>
+	<div id="d1">.append("html")</div>
+	<div id="d2">.append(col)</div>
+	<div id="d3">.to("selector")</div>
+	<div id="d4">.to(col)</div>
+	<div id="d5">.html()</div>
+	<div id="d6">.html("html")</div>
+	<div id="d7">.val()</div>
+	<div id="d8">.val(value)</div>
+	<div id="d9">.check()</div>
+	<div id="da">.check(bool)</div>
+	<script>
+		$(function(){
+		/*d1*/ $("#sandbox").append("<p id=sd1>") && $('#sd1').length==1 && $('#d1').cls('+ok');
+		/*d2*/ $("#sandbox").append($("<p id=sd2>")) && $('#sd2').length==1 && $('#d2').cls('+ok');
+		/*d3*/ $("<p id=sd3>").to("#sandbox") && $('#sd3').length==1 && $('#d3').cls('+ok');
+		/*d4*/ $("<p id=sd4>").to($("#sandbox")) && $('#sd4').length==1 && $('#d4').cls('+ok');
+		/*d5*/ $("<p id=sd5>test</p>").to($("#sandbox")) && $('#sd5').html()=="test" && $('#d5').cls('+ok');
+		/*d6*/ $("<p id=sd6></p>").html("test6").html()=="test6" && $('#d6').cls('+ok');
+		/*d7*/ $("<input type=text id=sd7 value=test7>").val()=="test7" && $('#d7').cls('+ok');
+		/*d8*/ $("<input type=text id=sd8>").val("test8")[0].value=="test8" && $('#d8').cls('+ok');
+		/*d9*/ $("<input type=checkbox checked id=sd9>").check() && $('#d9').cls('+ok');
+		/*da*/ $("<input type=checkbox id=sd9>").check(true).check() && $('#da').cls('+ok');
+		});
+	</script>
+
+	<h1>CSS</h1>
+	<div id="c1">.css({key:val})</div>
+	<div id="c2">.css("key","val")</div>
+	<div id="c3">.css("style")</div>
+	<div id="c4">.cls()</div>
+	<div id="c5">.cls("+a-b*c")</div>
+	<div id="c6">.cls("a")</div>
+	<div id="c7">.pos()</div>
+	<div id="c8">.pos(n)</div>
+	<script>
+		$(function(){
+		/*c1*/ $("#c1").css({backgroundColor:'#4a4'});
+		/*c2*/ $("#c2").css('backgroundColor','#4a4');
+		/*c3*/ $("#c3").css({float:'left'}).css('float').match(/left/i) && $("#c3").cls('+ok');
+		/*c4*/ $("#c4").cls('c4').cls()=='c4' && $("#c4").cls('+ok');
+		/*c5*/ $("#c5").cls('+a').cls()=='a' && $("#c5").cls('-a').cls()=='' && $("#c5").cls('*ok');
+		/*c6*/ $("#c6").cls('ok');
+		/*c7*/ $("#sandbox").pos().top==-10000 && $('#c7').cls('+ok');
+		/*c8*/ $('div').pos(0).top==-10000 && $('#c8').cls('+ok');
+		});
+	</script>
+
+	<h1>EVENTS</h1>
+	<div id="e1">.bind("event",function)</div>
+	<div id="e2">.unbind("event",function)</div>
+	<div id="e3">.fire("event",function)</div>
+	<!--<div id="e4">.on("event",function)</div>-->
+	<script>
+		$(function(){
+		/*e1*/$('#e1').click(function(){ $(this).cls('*ok') }).click();
+		/*e2*/v=0;fn=function(){ v++ };$('#e2').click(fn).unbind('click',fn).click() && v==0 && $('#e2').cls('+ok');
+		/*e3*/$('#e3').touchstart(function(){ $(this).cls('*ok') }).touchstart();
+		});
+	</script>
+
+	<h1>MISC</h1>
+	<div id="m1">.list</div>
+	<div id="m2">.length</div>
+	<div id="m3">.each(function)</div>
+	<script>
+		$(function(){
+		/*m1*/$('#m1').list[0].className='ok';
+		/*m2*/$('h1').length==7 && $('#m2').cls('+ok');
+		/*m3*/$('#m3').each(function(e){ e.className='ok' });
+		});
+	</script>
+
+	<h1>GLOBALS</h1>
+	<div id="g1">$.ready(function)</div>
+	<div id="g2">$.extend({},...)</div>
+	<div id="g3" class="todo">$.ajax("url",callback)</div>
+	<div id="g4" class="todo">$.ajax({options})</div>
+	<div id="g5">$.ajax({jsonp:true,...})</div>
+	<script>
+		$(function(){
+		/*g1*/$('#g1').cls('+ok');
+		/*g2*/a={z:2};$.extend(a,{x:3});a.x==3 && a.z==2 && $('#g2').cls('+ok');
+		/*g3*/
+		/*g4*/
+			$.ajax({
+				//url: 'http://api.ihackernews.com/page?format=jsonp',
+				url: 'http://en.wikipedia.org/w/api.php?action=opensearch&search=javascript&format=json',
+				jsonp: true,
+				success: function(d){
+					console.log(d);
+					$('#g5').cls('+ok');
+				}
+			})
+		});
+	</script>
+
+	<h1>END</h1>
+</body>
+</html>
