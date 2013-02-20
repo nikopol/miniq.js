@@ -39,7 +39,7 @@
 
 	<h1>SELECTORS</h1>
 	<div id="s1">$(function)</div>
-	<div id="s2">$("html")</div>
+	<div id="s2">$("<html>")</div>
 	<div id="s3">$("#id")</div>
 	<div class="s4">$(".class")</div>
 	<div id="s5">$("elem")</div>
@@ -66,8 +66,11 @@
 	<div id="da">check.val(bool)</div>
 	<div id="db">select.val()</div>
 	<div id="dc">select.val(value)</div>
-	<div id="dd">.parent()</div>
+	<div id="dd"><span>.parent()</span></div>
 	<div id="de"><span id="sde">.children()</span></div>
+	<div id="df">attr('id')</div>
+	<div id="dg">attr({name:value})</div>
+	<div id="dh">attr(name,value)</div>
 	<script>
 		$(function(){
 		/*d1*/ $("#sandbox").append("<p id=sd1>") && $('#sd1').length==1 && $('#d1').cls('+ok');
@@ -82,8 +85,11 @@
 		/*da*/ $("<input type=checkbox id=sda>").val(true).val() && $('#da').cls('+ok')
 		/*db*/ $("<select id=sdb><option value=a>1</option><option value=b>2</option></select>").val()=="a" && $('#db').cls('+ok');
 		/*dc*/ $("<select id=sdc><option value=a>1</option><option value=b>2</option></select>").val("b").val()=="b" && $('#dc').cls('+ok');
-		/*dd*/ $("#sandbox").parent()[0].tagName=='BODY' && $('#dd').cls('+ok');
+		/*dd*/ $("h1").parent().length==1 && $("#sandbox").parent()[0].tagName=='BODY' && $('#dd').cls('+ok');
 		/*de*/ $("#de").children()[0].id=='sde' && $('#de').cls('+ok');
+		/*df*/ $("#df").attr('id')=='df' && $('#df').cls('+ok');
+		/*dg*/ $("#dg").attr({data:42}).attr('data')==42 && $('#dg').cls('+ok');
+		/*dh*/ $("#dh").attr('data',42).attr('data')==42 && $('#dh').cls('+ok');
 		});
 	</script>
 
@@ -143,7 +149,7 @@
 	<script>
 		$(function(){
 		/*g1*/$('#g1').cls('+ok');
-		/*g2*/a={z:2};$.extend(a,{x:3});a.x==3 && a.z==2 && $('#g2').cls('+ok');
+		/*g2*/a={z:{z:42}};$.extend(a,{z:{x:3}}); a.z.x==3 && a.z.z==42 && $('#g2').cls('+ok');
 		/*g3*/
 		/*g4*/
 			$.ajax({
