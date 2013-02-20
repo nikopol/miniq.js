@@ -1,4 +1,4 @@
-// miniq.js 0.2 - niko 2013
+// miniq.js 0.3 - niko 2013
 
 /*
 one more mini jquery-like library for modern browsers
@@ -8,9 +8,10 @@ support firefox, opera, chrome, safari, and IE9+ with the following header
 
 CONSTRUCTOR ==================================================================
 
-  $(function)       : setup a callback when dom is ready (same as $.ready(fn))
-  $("html")         : return a collection of created elements
   $("selector")     : return a collection of matching elements
+  $("selector",from): return a collection of matching elements under from
+  $("html")         : return a collection of created elements
+  $(function)       : setup a callback when dom is ready (same as $.ready(fn))
 
 DOM ==========================================================================
 
@@ -141,31 +142,34 @@ var $ = (function(){
 			return null;
 		};
 
-	W.miniq = function(s){
-		var L = [],n,c,b;
+	W.miniq = function(s,f){
+		var l = [],n,c,b;
 		if(s!=undefined) {
 			if(typeof(s)=='function')
 				$.ready(s);
 			else if(typeof(s)=='object')
-				'length' in s ? (L = L.slice.call(s)) : L.push(s);
+				'length' in s ? (l = l.slice.call(s)) : l.push(s);
 			else if(typeof(s)=='string') {
 				if(/^<.+>$/.test(s)) {
 					(b = D.createElement('div')).innerHTML = s;
-					c = b.childNodes;
-				} else
-					c = D.querySelectorAll(s);
-				L = L.slice.call(c);
+					l = [].slice.call(b.childNodes);
+				} else if(f!=undefined)
+					$(f).each(function(o){
+						l = l.concat([].slice.call(o.querySelectorAll(s)))
+					});
+				else
+					l = [].slice.call(D.querySelectorAll(s));
 			}
 			//[] operator
-			for(n in L) this[n] = L[n];
+			for(n in l) this[n] = l[n];
 		}
-		this.length = L.length;
-		this.list = L;
+		this.length = l.length;
+		this.list = l;
 		return this;
 	};
 
-	$ = function(s){
-		return new miniq(s);
+	$ = function(s,f){
+		return new miniq(s,f);
 	};
 
 	$.ready = function(cb){

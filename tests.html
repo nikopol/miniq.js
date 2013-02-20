@@ -43,6 +43,7 @@
 	<div id="s3">$("#id")</div>
 	<div class="s4">$(".class")</div>
 	<div id="s5">$("elem")</div>
+	<div id="s6"><span id="sd6">$("elem","from")</span></div>
 	<script>
 		$(function(){
 		/*s1*/ $(function(){ $('#s1').cls('+ok') });
@@ -50,6 +51,7 @@
 		/*s3*/ $('#s3').cls('+ok');
 		/*s4*/ $('.s4').cls('+ok');
 		/*s5*/ $('body')[0].tagName=="BODY" && $('#s5').cls('+ok');
+		/*s6*/ $('span','#s6').length==1 && $('span','#s6')[0].id=="sd6" && $('#s6').cls('+ok');
 		});
 	</script>
 
@@ -137,7 +139,7 @@
 	<script>
 		$(function(){
 		/*m1*/$('#m1').list[0].className='ok';
-		/*m2*/$('h1').length==7 && $('#m2').cls('+ok');
+		/*m2*/$('#m1,#m2').length==2 && $('#m2').cls('+ok');
 		/*m3*/$('#m3').each(function(e){ e.className='ok' });
 		});
 	</script>
