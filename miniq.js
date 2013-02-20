@@ -25,6 +25,9 @@ DOM ==========================================================================
   .text("html")     : set the inner text
   .val()            : return value of the first element
   .val(value)       : set value
+  .attr('id')       : return an attribute value of the first element
+  .attr('id','val') : set an attribute
+  .attr({id:'val'}) : set attributes
   .parent()         : return $(parent)
   .children()       : return $(children)
 
@@ -105,7 +108,7 @@ if you need an access to the collection, just extend the miniq.prototype
 as follows :
   
   miniq.prototype.helloworld=function(){ 
-  	console.log("hello world",this.list)
+  	this.text('hello world!')
   };
 
 otherwise extend $
@@ -122,40 +125,38 @@ var $ = (function(){
 	"use strict";
 
 	var
-	$,
-	P = 0,
-	W = window,
-	D = W.document,
-	V = function(e,v){
-		if(e && 'value' in e){
-			var c = e.type[0]=='c', s = e.type[0]=='s';
-			if(v==undefined) return c ? e.checked : e.value;
-			if(c) e.checked = !!v;
-			else if(s) [].slice.call(e.options).forEach(function(o,n){ if(o.value==v) e.selectedIndex = n });
-			else e.value = v;
-		}
-		return null;
-	};
+		$,
+		P = 0,
+		W = window,
+		D = W.document,
+		V = function(e,v){
+			if(e && 'value' in e){
+				var c = e.type[0]=='c', s = e.type[0]=='s';
+				if(v==undefined) return c ? e.checked : e.value;
+				if(c) e.checked = !!v;
+				else if(s) [].slice.call(e.options).forEach(function(o,n){ if(o.value==v) e.selectedIndex = n });
+				else e.value = v;
+			}
+			return null;
+		};
 
 	W.miniq = function(s){
 		var L = [],n,c,b;
 		if(s!=undefined) {
-			if(typeof(s)=='function') {
+			if(typeof(s)=='function')
 				$.ready(s);
-			} else if(typeof(s)=='object') {
-				if('length' in s) L = [].slice.call(s);
-				else L.push(s);
-			} else if(typeof(s)=='string') {
+			else if(typeof(s)=='object')
+				'length' in s ? (L = L.slice.call(s)) : L.push(s);
+			else if(typeof(s)=='string') {
 				if(/^<.+>$/.test(s)) {
-					b = D.createElement('div');
-					b.innerHTML = s;
+					(b = D.createElement('div')).innerHTML = s;
 					c = b.childNodes;
 				} else
 					c = D.querySelectorAll(s);
-				L = [].slice.call(c);
+				L = L.slice.call(c);
 			}
 			//[] operator
-			for(n=0; n<L.length; this[n] = L[n++]);
+			for(n in L) this[n] = L[n];
 		}
 		this.length = L.length;
 		this.list = L;
@@ -169,7 +170,7 @@ var $ = (function(){
 	$.ready = function(cb){
 		if(/complete|loaded|interactive/.test(D.readyState)) cb();
 		//else if(D.attachEvent) D.attachEvent('ondocumentready',cb()); 
-		else D.addEventListener('DOMContentLoaded',function(){cb()});
+		else $(D).bind('DOMContentLoaded',cb);
 		return $;
 	};
 
@@ -191,14 +192,14 @@ var $ = (function(){
 	$.ajax = function(o,cb){
 		if(typeof(o)=='string') o = { url:o, ok:cb };
 		var
-		type = o.type || 'GET',
-		url  = o.url || '',
-		ctyp = o.contenttype || 'application/x-www-form-urlencoded',
-		dtyp = o.datatype || 'application/json',
-		xhr  = o.jsonp || new W.XMLHttpRequest(),
-		err  = o.error || $.error,
-		ok   = o.success || function(){},
-		timer,d,n;
+			type = o.type || 'GET',
+			url  = o.url || '',
+			ctyp = o.contenttype || 'application/x-www-form-urlencoded',
+			dtyp = o.datatype || 'application/json',
+			xhr  = o.jsonp || new W.XMLHttpRequest(),
+			err  = o.error || $.error,
+			ok   = o.success || function(){},
+			timer,d,n;
 		if(o.data){
 			if(typeof(o.data)=='string')
 				d = o.data;
@@ -216,7 +217,7 @@ var $ = (function(){
 			}
 		}
 		if(o.jsonp) {
-			if(P) $('#jsonp'+(D-1)).remove();
+			P && $('#jsonp'+(P-1)).remove();
 			d = D.createElement('script');
 			n = "jsonp"+P++;
 			W[n] = ok;
@@ -273,7 +274,9 @@ var $ = (function(){
 		/*DOM*/
 
 		parent: function(){
-			return $(this.length ? this[0].parentNode : null);
+			var i,n,p = [];
+			for(i in this.list) (n=this.list[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
+			return $(p);
 		},
 
 		children: function(){
@@ -300,15 +303,19 @@ var $ = (function(){
 		},
 
 		html: function(s){
-			return s==undefined 
-				? (this.length ? this[0].innerHTML : null)
-				: this.each(function(o){ o.innerHTML = s });
+			return s!=undefined 
+				? this.each(function(o){ o.innerHTML = s })
+				: this.length 
+					? this[0].innerHTML
+					: null;
 		},
 
 		text: function(s){
-			return s==undefined 
-				? (this.length ? this[0].innerText : null)
-				: this.each(function(o){ o.innerText = s });
+			return s!=undefined 
+				? this.each(function(o){ o.innerText = s })
+				: this.length
+					? this[0].innerText
+					: null;
 		},
 
 		val: function(s){
@@ -317,10 +324,14 @@ var $ = (function(){
 				: this.each(function(o){ V(o,s) });
 		},
 
-		attr: function(s){
-			if(typeof(s)=='string') return this.length ? this[0].getAttribute(s) : null;
-			for(var k in s) this.each(function(o){ o.setAttribute(k,s[k]) });
-			return this;
+		attr: function(s,v){
+			if(typeof(s)=='object'){
+				for(var k in s)
+					this.attr(k,s[k]);
+				return this;
+			} else if(v==undefined)
+				return this.length ? this[0].getAttribute(s) : null;
+			return this.each(function(o){ o.setAttribute(s,v) });
 		},
 
 		cls: function(c){
