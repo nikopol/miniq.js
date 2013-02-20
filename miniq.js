@@ -1,4 +1,4 @@
-// miniq.js 0.1 - niko 2013
+// miniq.js 0.2 - niko 2013
 
 /*
 one more mini jquery-like library for modern browsers
@@ -21,8 +21,12 @@ DOM ==========================================================================
   .remove()         : remove elements from the DOM
   .html()           : return inner html of the first element
   .html("html")     : set the inner html
+  .text()           : return inner text of the first element
+  .text("html")     : set the inner text
   .val()            : return value of the first element
   .val(value)       : set value
+  .parent()         : return $(parent)
+  .children()       : return $(children)
 
 CSS ==========================================================================
 
@@ -268,6 +272,16 @@ var $ = (function(){
 
 		/*DOM*/
 
+		parent: function(){
+			return $(this.length ? this[0].parentNode : null);
+		},
+
+		children: function(){
+			var i, p = [];
+			for(i in this.list) this.list[i].childNodes && (p=p.concat([].slice.call(this.list[i].childNodes)));
+			return $(p);
+		},
+
 		append: function(s){
 			return this.each(function(o){
 				$(s).each(function(a){ o.appendChild(a) })
@@ -289,6 +303,12 @@ var $ = (function(){
 			return s==undefined 
 				? (this.length ? this[0].innerHTML : null)
 				: this.each(function(o){ o.innerHTML = s });
+		},
+
+		text: function(s){
+			return s==undefined 
+				? (this.length ? this[0].innerText : null)
+				: this.each(function(o){ o.innerText = s });
 		},
 
 		val: function(s){

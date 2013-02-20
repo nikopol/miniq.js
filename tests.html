@@ -66,6 +66,8 @@
 	<div id="da">check.val(bool)</div>
 	<div id="db">select.val()</div>
 	<div id="dc">select.val(value)</div>
+	<div id="dd">.parent()</div>
+	<div id="de"><span id="sde">.children()</span></div>
 	<script>
 		$(function(){
 		/*d1*/ $("#sandbox").append("<p id=sd1>") && $('#sd1').length==1 && $('#d1').cls('+ok');
@@ -80,6 +82,8 @@
 		/*da*/ $("<input type=checkbox id=sda>").val(true).val() && $('#da').cls('+ok')
 		/*db*/ $("<select id=sdb><option value=a>1</option><option value=b>2</option></select>").val()=="a" && $('#db').cls('+ok');
 		/*dc*/ $("<select id=sdc><option value=a>1</option><option value=b>2</option></select>").val("b").val()=="b" && $('#dc').cls('+ok');
+		/*dd*/ $("#sandbox").parent()[0].tagName=='BODY' && $('#dd').cls('+ok');
+		/*de*/ $("#de").children()[0].id=='sde' && $('#de').cls('+ok');
 		});
 	</script>
 
