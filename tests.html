@@ -71,6 +71,7 @@
 	<div id="df">attr('id')</div>
 	<div id="dg">attr({name:value})</div>
 	<div id="dh">attr(name,value)</div>
+	<div id="di">.empty()</div>
 	<script>
 		$(function(){
 		/*d1*/ $("#sandbox").append("<p id=sd1>") && $('#sd1').length==1 && $('#d1').cls('+ok');
@@ -90,6 +91,7 @@
 		/*df*/ $("#df").attr('id')=='df' && $('#df').cls('+ok');
 		/*dg*/ $("#dg").attr({data:42}).attr('data')==42 && $('#dg').cls('+ok');
 		/*dh*/ $("#dh").attr('data',42).attr('data')==42 && $('#dh').cls('+ok');
+		/*di*/ $("#di").empty().text()=="" && $("#di").text(".empty()") && $('#di').cls('+ok');
 		});
 	</script>
 

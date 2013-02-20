@@ -19,6 +19,7 @@ DOM ==========================================================================
   .to("selector")   : append itself to the selector
   .to(col)          : append itself to the collection
   .remove()         : remove elements from the DOM
+  .empty()          : remove contents
   .html()           : return inner html of the first element
   .html("html")     : set the inner html
   .text()           : return inner text of the first element
@@ -316,6 +317,10 @@ var $ = (function(){
 				: this.length
 					? this[0].innerText
 					: null;
+		},
+
+		empty: function(){
+			return this.html('');
 		},
 
 		val: function(s){
