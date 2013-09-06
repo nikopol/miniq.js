@@ -163,8 +163,9 @@ var $ = (function(){
 			//[] operator
 			for(n in l) this[n] = l[n];
 		}
-		this.length = l.length;
-		this.list = l;
+		//this.length = l.length;
+		this.list=l;
+		Object.defineProperty(this,'length',{value:l.length,enumerable:false,writable:false});
 		return this;
 	};
 
@@ -437,5 +438,6 @@ var $ = (function(){
 			W.miniq.prototype[e]=function(cb){ return cb ? this.bind(e,cb) : this.fire(e) };
 		});
 
+	for(var fn in W.miniq.prototype) Object.defineProperty(W.miniq.prototype,fn,{enumerable:false});
 	return $;
 })();
