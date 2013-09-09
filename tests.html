@@ -37,7 +37,7 @@
 <body>
 	<div id="sandbox"></div>
 
-	<h1>SELECTORS</h1>
+ 	<h1>SELECTORS</h1>
 	<div id="s1">$(function)</div>
 	<div id="s2">$("<html>")</div>
 	<div id="s3">$("#id")</div>
@@ -123,7 +123,6 @@
 	<div id="e1">.bind("event",function)</div>
 	<div id="e2">.unbind("event",function)</div>
 	<div id="e3">.fire("event",function)</div>
-	<!--<div id="e4">.on("event",function)</div>-->
 	<script>
 		$(function(){
 		/*e1*/$('#e1').click(function(){ $(this).cls('*ok') }).click();
@@ -133,14 +132,14 @@
 	</script>
 
 	<h1>MISC</h1>
-	<div id="m1">.list</div>
 	<div id="m2">.length</div>
 	<div id="m3">.each(function)</div>
+	<div id="m4">.splice(start,nb,item1)</div>
 	<script>
 		$(function(){
-		/*m1*/$('#m1').list[0].className='ok';
-		/*m2*/$('#m1,#m2').length==2 && $('#m2').cls('+ok');
+		/*m2*/$('#m2,#m3').length==2 && $('#m2').cls('+ok');
 		/*m3*/$('#m3').each(function(e){ e.className='ok' });
+		/*m4*/v=$('#m3,#m4').splice(1,1,'#m2'); v.length==2 && v[1].id=="m2" && $('#m4').cls('*ok');
 		});
 	</script>
 
@@ -160,10 +159,7 @@
 				//url: 'http://api.ihackernews.com/page?format=jsonp',
 				url: 'http://en.wikipedia.org/w/api.php?action=opensearch&search=javascript&format=json',
 				jsonp: true,
-				success: function(d){
-					console.log(d);
-					$('#g5').cls('+ok');
-				}
+				success: function(d){ $('#g5').cls('+ok'); }
 			})
 		});
 	</script>
@@ -174,7 +170,10 @@
 	<script>
 		$(function(){
 		/*z1*/$.zob=function(){ $('#z1').cls('+ok'); }; $.zob();
-		/*z2*/miniq.prototype.zob=function(){ return this.cls('+ok') }; $('#z2').zob();
+		/*z2*/miniq.prototype.zob=function(){ 
+			return this.cls('+ok') 
+		};
+		$('#z2').zob();
 		});
 	</script></body>
 </html>

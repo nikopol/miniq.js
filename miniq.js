@@ -1,4 +1,4 @@
-// miniq.js 0.3 - niko 2013
+// miniq.js 0.4 - niko 2013
 
 /*
 one more mini jquery-like library for modern browsers
@@ -84,9 +84,12 @@ EVENTS =======================================================================
 
 MISC =========================================================================
 
-  .list                : return the collection array
+  [nth]                : return the nth matching element
   .length              : return the length of the collection
   .each(function(e){}) : callback for each elements
+  .slice(start,nb)     : return a new miniq object including start to start+nb
+  .splice(start[,nb[,item1...]]) : return a new miniq object replacing start
+                                   to start+nb by provided items
 
 GLOBALS ======================================================================
 
@@ -163,8 +166,6 @@ var $ = (function(){
 			//[] operator
 			for(n in l) this[n] = l[n];
 		}
-		//this.length = l.length;
-		this.list=l;
 		Object.defineProperty(this,'length',{value:l.length,enumerable:false,writable:false});
 		return this;
 	};
@@ -272,22 +273,36 @@ var $ = (function(){
 		ajax: $.ajax,
 
 		each: function(cb){
-			var _ = this;
-			_.list.forEach(function(o){ cb.call(_,o) });
+			var i, _ = this;
+			for(i=0; i<_.length; ++i) cb.call(_,_[i]);
 			return _;
+		},
+
+		slice: function(){
+			return $([].slice.apply(this,arguments));
+		},
+
+		splice: function(n,r){
+			var i, l = [], a=[].slice.call(arguments,2);
+			if(n<0) n=this.length+n;
+			for(i=0;i<n;++i) l.push(this[i]);
+			while(a.length) $(a.shift()).each(function(o){ l.push(o) });
+			if(r) i+=r;
+			for(;i<this.length;++i) l.push(this[i]);
+			return $(l);
 		},
 
 		/*DOM*/
 
 		parent: function(){
-			var i,n,p = [];
-			for(i in this.list) (n=this.list[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
+			var i, n, p = [];
+			for(i in this) (n=this[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
 			return $(p);
 		},
 
 		children: function(){
-			var i, p = [];
-			for(i in this.list) this.list[i].childNodes && (p=p.concat([].slice.call(this.list[i].childNodes)));
+			var i, p = [], _ = this;
+			for(i in _) _[i].childNodes && (p=p.concat([].slice.call(_[i].childNodes)));
 			return $(p);
 		},
 
@@ -298,13 +313,13 @@ var $ = (function(){
 		},
 
 		to: function(s){
-			$(s).append(this.list);
+			$(s).append(this);
 			return this;
 		},
 
 		remove: function(){
 			return this.each(function(o){
-				$(s).list.forEach(function(a){ o.parent.removeChild(o) })
+				$(s).each(function(){ o.parent.removeChild(o) })
 			});
 		},
 
@@ -318,9 +333,9 @@ var $ = (function(){
 
 		text: function(s){
 			return s!=undefined 
-				? this.each(function(o){ o.innerText = s })
+				? this.each(function(o){ o.innerHTML = s })
 				: this.length
-					? this[0].innerText
+					? this[0].innerText || ''
 					: null;
 		},
 
@@ -438,6 +453,6 @@ var $ = (function(){
 			W.miniq.prototype[e]=function(cb){ return cb ? this.bind(e,cb) : this.fire(e) };
 		});
 
-	for(var fn in W.miniq.prototype) Object.defineProperty(W.miniq.prototype,fn,{enumerable:false});
+	for(var f in W.miniq.prototype) Object.defineProperty(W.miniq.prototype,f,{enumerable:false});
 	return $;
 })();
