@@ -15,7 +15,7 @@ CONSTRUCTOR ==================================================================
 
 TRAVERSING ===================================================================
 
-  .list                  : return the collection array
+  .array                 : return the collection array
   .length                : return the length of the collection
   .each(function(e){})   : callback for each elements
   .filter(function(e){}) : callback for each elements and keep them only
@@ -180,7 +180,7 @@ otherwise extend $
 			//[] operator
 			for(n in l) this[n] = l[n];
 		}
-		this.list=l;
+		this.array = l;
 		Object.defineProperty(this,'length',{value:l.length,enumerable:false,writable:false});
 		return this;
 	};
@@ -284,25 +284,25 @@ otherwise extend $
 		/*TRAVERSING*/
 
 		each: function(cb){
-			var _ = this;
-			_.list.forEach(function(o){ cb.call(_,o) });
+			var i, _ = this;
+			for(i=0; i<_.length; ++i) cb.call(_,_[i]);
 			return _;
 		},
 
 		filter: function(cb){
 			var _ = this;
-			return $(_.list.filter(function(o){ return cb.call(_,o) }));
+			return $(_.array.filter(function(o){ return cb.call(_,o) }));
 		},
 
 		some: function(cb){
 			var _ = this;
-			_.list.some(function(o){ return cb.call(_,o) });
+			_.array.some(function(o){ return cb.call(_,o) });
 			return _;
 		},
 
 		nth: function(n){
 			if( n<0 ) n = this.length + n;
-			return n < 0 || n >= this.length ? $() : $(this.list[n])
+			return n < 0 || n >= this.length ? $() : $(this[n])
 		},
 
 		/*DOM*/
@@ -314,7 +314,7 @@ otherwise extend $
 		},
 
 		to: function(s){
-			$(s).append(this.list);
+			$(s).append(this);
 			return this;
 		},
 
@@ -324,13 +324,13 @@ otherwise extend $
 
 		parent: function(){
 			var i,n,p = [];
-			for(i in this.list) (n=this.list[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
+			for(i in this.array) (n=this[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
 			return $(p);
 		},
 
 		children: function(){
 			var i, p = [];
-			for(i in this.list) this.list[i].childNodes && (p=p.concat([].slice.call(this.list[i].childNodes)));
+			for(i in this.array) this[i].childNodes && (p=p.concat([].slice.call(this[i].childNodes)));
 			return $(p);
 		},
 
@@ -344,9 +344,9 @@ otherwise extend $
 
 		text: function(s){
 			return s!=undefined 
-				? this.each(function(o){ o.innerText = s })
+				? this.each(function(o){ o.innerHTML = s })
 				: this.length
-					? this[0].innerText
+					? this[0].innerText || ''
 					: null;
 		},
 
@@ -492,5 +492,6 @@ otherwise extend $
 			$.fn[e]=function(cb){ return cb ? this.on(e,cb) : this.fire(e) };
 		});
 	for(var fn in $.fn) Object.defineProperty($.fn,fn,{enumerable:false});
+
 	return $;
 })();

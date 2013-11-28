@@ -50,7 +50,7 @@
 
 	<div id="sandbox" class="hidden"></div>
 
-	<h2>CONSTRUCTORS</h2>
+	<h2>SELECTORS</h2>
 	<div id="s1">$(function)</div>
 	<div id="s2">$("<html>")</div>
 	<div id="s3">$("#id")</div>
@@ -69,7 +69,7 @@
 	</script>
 
 	<h2>TRAVERSING</h2>
-	<div id="m1">.list</div>
+	<div id="m1">.array</div>
 	<div id="m2">.length</div>
 	<div id="m3">.each(function)</div>
 	<div id="m4">.filter(function)</div>
@@ -79,7 +79,7 @@
 
 	<script>
 		$(function(){
-		/*m1*/$('#m1').list[0].className='ok';
+		/*m1*/$('#m1').array[0].className='ok';
 		/*m2*/$('#m1,#m2').length==2 && $('#m2').cls('ok');
 		/*m3*/$('#m3').each(function(e){ e.className='ok' });
 		/*m4*/$('div').filter(function(e){ return e.id=="m4" }).cls('ok');
@@ -167,7 +167,6 @@
 	<div id="e1">.on("event",function)</div>
 	<div id="e2">.off("event",function)</div>
 	<div id="e3">.fire("event",function)</div>
-	<!--<div id="e4">.on("event",function)</div>-->
 	<script>
 		$(function(){
 		/*e1*/$('#e1').click(function(){ $(this).cls('*ok') }).click();
@@ -192,10 +191,7 @@
 				//url: 'http://api.ihackernews.com/page?format=jsonp',
 				url: 'http://en.wikipedia.org/w/api.php?action=opensearch&search=javascript&format=json',
 				jsonp: true,
-				success: function(d){
-					console.log(d);
-					$('#g5').cls('+ok');
-				}
+				success: function(d){ $('#g5').cls('+ok'); }
 			})
 		});
 	</script>
@@ -216,9 +212,17 @@
 	<div id="j3" class="zob">.removeClass</div>
 	<script>
 		$(function(){
+<<<<<<< HEAD
 		/*j1*/jQuery('#j1').cls('+ok');
 		/*j2*/$('#j2').addClass('ok');
 		/*j3*/$('#j3').removeClass('zob').cls()=="" && $('#j3').cls('ok');
+=======
+		/*z1*/$.zob=function(){ $('#z1').cls('+ok'); }; $.zob();
+		/*z2*/miniq.prototype.zob=function(){ 
+			return this.cls('+ok') 
+		};
+		$('#z2').zob();
+>>>>>>> bceef71dd89708fab4c048db055b65505d723193
 		});
 	</script>
  -->
