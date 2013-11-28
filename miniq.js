@@ -1,4 +1,4 @@
-// miniq.js 0.3 - niko 2013
+// miniq.js 0.4 - niko 2013
 
 /*
 one more mini jquery-like library for modern browsers
@@ -8,10 +8,20 @@ support firefox, opera, chrome, safari, and IE9+ with the following header
 
 CONSTRUCTOR ==================================================================
 
-  $("selector")     : return a collection of matching elements
-  $("selector",from): return a collection of matching elements under from
-  $("html")         : return a collection of created elements
-  $(function)       : setup a callback when dom is ready (same as $.ready(fn))
+  $("selector")      : return a collection of matching elements
+  $("selector",from) : return a collection of matching elements under from
+  $("html")          : return a collection of created elements
+  $(function)        : setup a callback when dom is ready (same as $.ready(fn))
+
+TRAVERSING ===================================================================
+
+  .list                  : return the collection array
+  .length                : return the length of the collection
+  .each(function(e){})   : callback for each elements
+  .filter(function(e){}) : callback for each elements and keep them only
+                           when true is returned
+  .some(function(e){})   : callback for each elements until true is returned
+  .nth(n)                : return $(nth element) (nth negative = from the end)
 
 DOM ==========================================================================
 
@@ -29,9 +39,11 @@ DOM ==========================================================================
   .val(value)       : set value
   .attr('id')       : return an attribute value of the first element
   .attr('id','val') : set an attribute
+  .attr('id',false) : unset an attribute
   .attr({id:'val'}) : set attributes
   .parent()         : return $(parent)
   .children()       : return $(children)
+  .clone()          : return a deep copy of the collection
 
 CSS ==========================================================================
 
@@ -41,15 +53,20 @@ CSS ==========================================================================
   .cls()            : return classname of the first element
   .cls("+a-b*c")    : relatively set classname : +add a, -remove b, *switch c
   .cls("a")         : set classname
+  .has("class")     : test if 
   .show()           : proxy for .css({display: null})
   .hide()           : proxy for .css({display: 'none'})
   .pos()            : return {width,height,top,left} of the first element
-  .pos(n)           : return {width,height,top,left} of the n th element
+  .pos(n)           : return {width,height,top,left} of the n'th element
+  .width()          : return the width of the first element
+  .width(n)         : return the width of the n'th element
+  .height()         : return the height of the first element
+  .height(n)        : return the height of the n'th element
 
 EVENTS =======================================================================
 
-  .bind("event1 event2",function) : add event(s) listener
-  .unbind("event",function)       : remove event(s) listener
+  .on("event1 event2",function)   : add event(s) listener
+  .off("event",function)          : remove event(s) listener
   .fire("event")                  : trigger events
   .focus(function)                :     for all the followings events,
   .blur(function)                 :     if function is not provided,
@@ -81,12 +98,13 @@ EVENTS =======================================================================
   .touchend(function)
   .touchmove(function)
   .orientationchange(function)
-
-MISC =========================================================================
-
-  .list                : return the collection array
-  .length              : return the length of the collection
-  .each(function(e){}) : callback for each elements
+  .play(function)
+  .pause(function)
+  .timeupdate(function)
+  .ended(function)
+  .durationchange(function)
+  .volumechange(function)
+  .stalled(function)
 
 GLOBALS ======================================================================
 
@@ -106,10 +124,10 @@ GLOBALS ======================================================================
 
 PLUGINS ======================================================================
 
-if you need an access to the collection, just extend the miniq.prototype 
+if you need an access to the collection, just extend $.fn
 as follows :
   
-  miniq.prototype.helloworld=function(){ 
+  $.fn.helloworld=function(){ 
   	this.text('hello world!')
   };
 
@@ -121,9 +139,8 @@ otherwise extend $
 
 */
 
-/* CORE */
 
-var $ = (function(){
+;var $ = (function(){
 	"use strict";
 
 	var
@@ -163,7 +180,6 @@ var $ = (function(){
 			//[] operator
 			for(n in l) this[n] = l[n];
 		}
-		//this.length = l.length;
 		this.list=l;
 		Object.defineProperty(this,'length',{value:l.length,enumerable:false,writable:false});
 		return this;
@@ -176,7 +192,7 @@ var $ = (function(){
 	$.ready = function(cb){
 		if(/complete|loaded|interactive/.test(D.readyState)) cb();
 		//else if(D.attachEvent) D.attachEvent('ondocumentready',cb()); 
-		else $(D).bind('DOMContentLoaded',cb);
+		else $(D).on('DOMContentLoaded',cb);
 		return $;
 	};
 
@@ -263,13 +279,9 @@ var $ = (function(){
 		return xhr;
 	};
 
-	W.miniq.prototype = {
+	W.miniq.prototype = $.fn = {
 
-		/*MISC*/
-
-		ready: $.ready,
-		
-		ajax: $.ajax,
+		/*TRAVERSING*/
 
 		each: function(cb){
 			var _ = this;
@@ -277,19 +289,23 @@ var $ = (function(){
 			return _;
 		},
 
+		filter: function(cb){
+			var _ = this;
+			return $(_.list.filter(function(o){ return cb.call(_,o) }));
+		},
+
+		some: function(cb){
+			var _ = this;
+			_.list.some(function(o){ return cb.call(_,o) });
+			return _;
+		},
+
+		nth: function(n){
+			if( n<0 ) n = this.length + n;
+			return n < 0 || n >= this.length ? $() : $(this.list[n])
+		},
+
 		/*DOM*/
-
-		parent: function(){
-			var i,n,p = [];
-			for(i in this.list) (n=this.list[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
-			return $(p);
-		},
-
-		children: function(){
-			var i, p = [];
-			for(i in this.list) this.list[i].childNodes && (p=p.concat([].slice.call(this.list[i].childNodes)));
-			return $(p);
-		},
 
 		append: function(s){
 			return this.each(function(o){
@@ -303,9 +319,19 @@ var $ = (function(){
 		},
 
 		remove: function(){
-			return this.each(function(o){
-				$(s).list.forEach(function(a){ o.parent.removeChild(o) })
-			});
+			return this.each(function(o){ o.parentNode.removeChild(o) });
+		},
+
+		parent: function(){
+			var i,n,p = [];
+			for(i in this.list) (n=this.list[i].parentNode) && p.indexOf(n)==-1 && p.push(n);
+			return $(p);
+		},
+
+		children: function(){
+			var i, p = [];
+			for(i in this.list) this.list[i].childNodes && (p=p.concat([].slice.call(this.list[i].childNodes)));
+			return $(p);
 		},
 
 		html: function(s){
@@ -339,10 +365,21 @@ var $ = (function(){
 				for(var k in s)
 					this.attr(k,s[k]);
 				return this;
-			} else if(v==undefined)
+			} else if(v===false) {
+				this.each(function(o){ o.removeAttribute(s) });
+			} else if(v==undefined) {
 				return this.length ? this[0].getAttribute(s) : null;
+			}
 			return this.each(function(o){ o.setAttribute(s,v) });
 		},
+
+		clone: function(){
+			var l = [];
+			this.each(function(e){ l.push(e.cloneNode(true)) });
+			return $(l);
+		},
+
+		/*CSS*/
 
 		cls: function(c){
 			if(c==undefined) return this.length ? this[0].className : null;
@@ -361,6 +398,15 @@ var $ = (function(){
 			} else
 				this.each(function(o){ o.className = c });
 			return this;
+		},
+
+		has: function(c){
+			var r = false;
+			this.some(function(o){
+				r = o.className.split(' ').some(function(e){ return e == c });
+				return r;
+			});
+			return r;
 		},
 
 		css: function(c,v){
@@ -401,15 +447,23 @@ var $ = (function(){
 			return null;
 		},
 
+		width: function(n) {
+			return (this.pos(n)||{width:0}).width;
+		},
+
+		height: function(n) {
+			return (this.pos(n)||{height:0}).height;
+		},
+
 		/*EVENTS*/
 
-		bind: function(ev,cb){
+		on: function(ev,cb){
 			return this.each(function(o){
 				ev.split(/\s+/).forEach(function(e){ o.addEventListener(e,cb) });
 			});
 		},
 
-		unbind: function(ev,cb){
+		off: function(ev,cb){
 			return this.each(function(o){
 				ev.split(/\s+/).forEach(function(e){ o.removeEventListener(e,cb) });
 			});
@@ -433,11 +487,10 @@ var $ = (function(){
 
 	};
 	//setup event fn
-	"focus blur focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select keydown keypress keyup error animationstart animationend animationiteration touchstart touchend touchmove orientationchange"
+	"focus blur focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select keydown keypress keyup error animationstart animationend animationiteration touchstart touchend touchmove orientationchange play pause timeupdate ended durationchange volumechange stalled"
 		.split(' ').forEach(function(e){
-			W.miniq.prototype[e]=function(cb){ return cb ? this.bind(e,cb) : this.fire(e) };
+			$.fn[e]=function(cb){ return cb ? this.on(e,cb) : this.fire(e) };
 		});
-
-	for(var fn in W.miniq.prototype) Object.defineProperty(W.miniq.prototype,fn,{enumerable:false});
+	for(var fn in $.fn) Object.defineProperty($.fn,fn,{enumerable:false});
 	return $;
 })();

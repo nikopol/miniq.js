@@ -2,19 +2,30 @@
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 	<script src="miniq.js"></script>
+	<!-- <script src="miniq-comp.js"></script> -->
 	<style>
 		body {
-			font: normal 12px mono;
+			font: normal 14px 'Monaco','Lucida Console',mono;
+			margin: 0;
 		}
 		h1 {
-			font: bold 18px mono;
+			color: #fff;
+			background: #666;
+			font-size: 26px;
+			padding: 5px;
+			margin: 0 0 10px 0;
+		}
+		h2 {
+			font-size: 18px;
 			margin: 3px;
+			padding-top: 10px;
 			clear: both;
 		}
 		div {
 			float: left;
 			text-align: center;
 			width: 200px;
+			height: 20px;
 			color: #fff;
 			background-color: #a44;
 			padding: 2px;
@@ -26,7 +37,7 @@
 		div.todo {
 			background-color: #888;
 		}
-		#sandbox {
+		.hidden {
 			position: absolute;
 			padding: 0;
 			margin: 0;
@@ -35,9 +46,11 @@
 	</style>
 </head>
 <body>
-	<div id="sandbox"></div>
+	<h1>MiniQ Tests</h1>
 
-	<h1>SELECTORS</h1>
+	<div id="sandbox" class="hidden"></div>
+
+	<h2>CONSTRUCTORS</h2>
 	<div id="s1">$(function)</div>
 	<div id="s2">$("<html>")</div>
 	<div id="s3">$("#id")</div>
@@ -55,7 +68,28 @@
 		});
 	</script>
 
-	<h1>DOM</h1>
+	<h2>TRAVERSING</h2>
+	<div id="m1">.list</div>
+	<div id="m2">.length</div>
+	<div id="m3">.each(function)</div>
+	<div id="m4">.filter(function)</div>
+	<div id="m5">.some(function)</div>
+	<div id="m6">.nth(0) aka .first()</div>
+	<div id="m7">.nth(-1) aka .last()</div>
+
+	<script>
+		$(function(){
+		/*m1*/$('#m1').list[0].className='ok';
+		/*m2*/$('#m1,#m2').length==2 && $('#m2').cls('ok');
+		/*m3*/$('#m3').each(function(e){ e.className='ok' });
+		/*m4*/$('div').filter(function(e){ return e.id=="m4" }).cls('ok');
+		/*m5*/$('div').some(function(e){ if(e.id=="m5"){$(e).cls('ok');return true;} return false; });
+		/*m6*/$('#m6,#sandbox2').nth(0).cls('ok');
+		/*m7*/$('#sandbox,#m7').nth(-1).cls('ok');
+		});
+	</script>
+
+	<h2>DOM</h2>
 	<div id="d1">.append("html")</div>
 	<div id="d2">.append(col)</div>
 	<div id="d3">.to("selector")</div>
@@ -74,6 +108,8 @@
 	<div id="dg">attr({name:value})</div>
 	<div id="dh">attr(name,value)</div>
 	<div id="di">.empty()</div>
+	<div id="dj">.clone()</div>
+	<div id="dk">.remove()<span>to remove</span></div>
 	<script>
 		$(function(){
 		/*d1*/ $("#sandbox").append("<p id=sd1>") && $('#sd1').length==1 && $('#d1').cls('+ok');
@@ -88,16 +124,18 @@
 		/*da*/ $("<input type=checkbox id=sda>").val(true).val() && $('#da').cls('+ok')
 		/*db*/ $("<select id=sdb><option value=a>1</option><option value=b>2</option></select>").val()=="a" && $('#db').cls('+ok');
 		/*dc*/ $("<select id=sdc><option value=a>1</option><option value=b>2</option></select>").val("b").val()=="b" && $('#dc').cls('+ok');
-		/*dd*/ $("h1").parent().length==1 && $("#sandbox").parent()[0].tagName=='BODY' && $('#dd').cls('+ok');
+		/*dd*/ $("h2").parent().length==1 && $("#sandbox").parent()[0].tagName=='BODY' && $('#dd').cls('+ok');
 		/*de*/ $("#de").children()[0].id=='sde' && $('#de').cls('+ok');
 		/*df*/ $("#df").attr('id')=='df' && $('#df').cls('+ok');
 		/*dg*/ $("#dg").attr({data:42}).attr('data')==42 && $('#dg').cls('+ok');
 		/*dh*/ $("#dh").attr('data',42).attr('data')==42 && $('#dh').cls('+ok');
 		/*di*/ $("#di").empty().text()=="" && $("#di").text(".empty()") && $('#di').cls('+ok');
+		/*dj*/ $("#dj").clone().attr({id:'djclone'}).text('bad clone') && $("#dj").cls('+ok');
+		/*dk*/ $("#dk span").remove() && $("#dk span").length==0 && $("#dk").cls('+ok');
 		});
 	</script>
 
-	<h1>CSS</h1>
+	<h2>CSS</h2>
 	<div id="c1">.css({key:val})</div>
 	<div id="c2">.css("key","val")</div>
 	<div id="c3">.css("style")</div>
@@ -106,6 +144,9 @@
 	<div id="c6">.cls("a")</div>
 	<div id="c7">.pos()</div>
 	<div id="c8">.pos(n)</div>
+	<div id="c9" class="zob">.has("class")</div>
+	<div id="ca">.width()</div>
+	<div id="cb">.height()</div>
 	<script>
 		$(function(){
 		/*c1*/ $("#c1").css({backgroundColor:'#4a4'});
@@ -116,35 +157,26 @@
 		/*c6*/ $("#c6").cls('ok');
 		/*c7*/ $("#sandbox").pos().top==-10000 && $('#c7').cls('+ok');
 		/*c8*/ $('div').pos(0).top==-10000 && $('#c8').cls('+ok');
+		/*c9*/ $('#c9').has('zob') && !$('#c9').has('prout') && $('#c9').cls('+ok');
+		/*ca*/ $('#ca').width()==204 && $('#ca').cls('+ok');
+		/*cb*/ $('#cb').height()==24 && $('#cb').cls('+ok');
 		});
 	</script>
 
-	<h1>EVENTS</h1>
-	<div id="e1">.bind("event",function)</div>
-	<div id="e2">.unbind("event",function)</div>
+	<h2>EVENTS</h2>
+	<div id="e1">.on("event",function)</div>
+	<div id="e2">.off("event",function)</div>
 	<div id="e3">.fire("event",function)</div>
 	<!--<div id="e4">.on("event",function)</div>-->
 	<script>
 		$(function(){
 		/*e1*/$('#e1').click(function(){ $(this).cls('*ok') }).click();
-		/*e2*/v=0;fn=function(){ v++ };$('#e2').click(fn).unbind('click',fn).click() && v==0 && $('#e2').cls('+ok');
+		/*e2*/v=0;fn=function(){ v++ };$('#e2').click(fn).off('click',fn).click() && v==0 && $('#e2').cls('+ok');
 		/*e3*/$('#e3').touchstart(function(){ $(this).cls('*ok') }).touchstart();
 		});
 	</script>
 
-	<h1>MISC</h1>
-	<div id="m1">.list</div>
-	<div id="m2">.length</div>
-	<div id="m3">.each(function)</div>
-	<script>
-		$(function(){
-		/*m1*/$('#m1').list[0].className='ok';
-		/*m2*/$('#m1,#m2').length==2 && $('#m2').cls('+ok');
-		/*m3*/$('#m3').each(function(e){ e.className='ok' });
-		});
-	</script>
-
-	<h1>GLOBALS</h1>
+	<h2>GLOBALS</h2>
 	<div id="g1">$.ready(function)</div>
 	<div id="g2">$.extend({},...)</div>
 	<div id="g3" class="todo">$.ajax("url",callback)</div>
@@ -168,13 +200,29 @@
 		});
 	</script>
 
-	<h1>MISC</h1>
-	<div id="z1">global plugin</div>
-	<div id="z2">list plugin</div>
+	<h2>MISC</h2>
+	<div id="z1">$ plugin</div>
+	<div id="z2">$.fn plugin</div>
 	<script>
 		$(function(){
-		/*z1*/$.zob=function(){ $('#z1').cls('+ok'); }; $.zob();
-		/*z2*/miniq.prototype.zob=function(){ return this.cls('+ok') }; $('#z2').zob();
+		/*z1*/$.zob=function(){ $('#z1').cls('+ok'); }; $.zob(); delete $.zob;
+		/*z2*/$.fn.zob=function(){ return this.cls('+ok') }; $('#z2').zob(); delete $.fn.zob;
 		});
-	</script></body>
+	</script>
+
+<!-- 	<h2>JQUERY COMPATIBILITY</h2>
+	<div id="j1">jQuery</div>
+	<div id="j2">.addClass</div>
+	<div id="j3" class="zob">.removeClass</div>
+	<script>
+		$(function(){
+		/*j1*/jQuery('#j1').cls('+ok');
+		/*j2*/$('#j2').addClass('ok');
+		/*j3*/$('#j3').removeClass('zob').cls()=="" && $('#j3').cls('ok');
+		});
+	</script>
+ -->
+	<div id="sandbox2" class="hidden"></div>
+
+</body>
 </html>
